@@ -35,7 +35,7 @@ def k_nearestneighbor(k, thruthValues, entry, labels):
 def distance(entry1, entry2):
     distance = 0
     for i in range(entry1.shape[0]):
-        distance+=abs(entry1[i]-entry2[i])**2
+        distance+=abs(entry1[i]-entry2[i])
     return distance
 
 #get array with distances to all points of np array from a given entry

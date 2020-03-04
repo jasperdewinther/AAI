@@ -215,22 +215,16 @@ def createTestSet(inputs, outputs, partValidation):
     return trainInputs, validationInputs, trainOutputs, validationOutputs
 
 def compareResults(array1, array2):
-    #round all answers and see if the results are the same
+    #check if the highest value of every result has the same index of the highest result of the other array
     if len(array1) != len(array2):
         raise Exception("arrays are not the same size")
     good = 0
-    wrong = 0
     for i in range(len(array1)):
-        foundFault = False
-        for j in range(len(array1[i])):
-            if round(array1[i][j]) == round(array2[i][j]):
-                pass
-            else:
-                foundFault = True
-        if foundFault == True:
-            wrong += 1
-        else:
-            good += 1
+        # Find index of maximum value from 2D numpy array
+        maxIndex1 = np.where(array1[i] == np.amax(array1[i]))
+        maxIndex2 = np.where(array2[i] == np.amax(array2[i]))
+        if maxIndex1 == maxIndex2:
+            good+=1
     return good/len(array1)
 
 
@@ -242,8 +236,8 @@ fault = 100
 counter = 0
 batch_size = len(trainIn)
 learning_rate = 0.1
-#4 inputs 2 layers of 16 hidden nodes and 3 outputs
-network_topology = [4,8,8,3]
+#4 inputs 2 layers of 4 hidden nodes and 3 outputs
+network_topology = [4,4,4,3]
 
 #network with layout, learning rate and batch size
 network = Network(network_topology, learning_rate, batch_size)
@@ -253,19 +247,22 @@ print(network)
 
 #fualts is used to graph the learning rate
 faults = list()
-#keep improving untill threshold has been reached
-for _ in range(1000):
-    fault = 0
-    #loop over possible inputs
-    for i in range(len(trainIn)):
-        desired = trainOut[i]
-        network.infer(trainIn[i])
-        fault += network.update(desired)
-        counter+=1
-    #sometimes print progress
-    if counter%100==0:    
-        faults.append(fault)
-        print("fault:", fault)
+#keep improving until control-c has been pressed or a lot of training has been done
+try:
+    for j in range(10000):
+        fault = 0
+        #loop over possible inputs
+        for i in range(len(trainIn)):
+            desired = trainOut[i]
+            network.infer(trainIn[i])
+            fault += network.update(desired)
+            counter+=1
+        #sometimes print progress
+        if counter%100==0:    
+            faults.append(fault)
+            print("cycle:", str(j), "fault:", fault)
+except:
+    pass
 
 
 

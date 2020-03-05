@@ -33,9 +33,9 @@ def relu_derivative(x):
 
 #wrapper to quickly swap activation functions
 def activation_function(z):
-    return tanh(z)
+    return sigmoid(z)
 def activation_function_derivative(x):
-    return tanh_derivative(x)
+    return sigmoid_derivative(x)
 
 class Neuron:
     def __init__(self, weigths, rate_of_change=0.1, bias=random.uniform(-1,1), batch_size=1, output_node = True, node_number=0):

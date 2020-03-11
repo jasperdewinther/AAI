@@ -104,11 +104,11 @@ class Network:
 n = Network(1, np.array([2,4,1]), sigmoid, sigmoid_derivative)
 
 inputsNOR = np.array([[0,0], [0,1], [1,0], [1,1]])
-validationNOR = np.array([1,0,0,0])
+validationNOR = np.array([0,1,1,0])
 
 
 faults = list()
-for i in range(1000):
+for i in range(10000):
     loopFaults = 0
     for j in range(4):
         result = n.forward(inputsNOR[j])

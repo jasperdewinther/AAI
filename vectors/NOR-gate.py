@@ -7,9 +7,9 @@ import matplotlib.pyplot as plt
 def sigmoid(z):
     #math.exp could throw out of range error if z is too big or too small
     if z < -700:
-        return 0
+        z = -700
     if z > 700:
-        return 1
+        z = 700
     return 1 / (1 + np.exp(-z))
 def sigmoid_derivative(x):
     return sigmoid(x)*(1-sigmoid(x))
@@ -60,6 +60,7 @@ class Network:
     
     def forward(self, inputs: np.ndarray) -> np.ndarray:
         self.intermidiate_sums[0] = inputs.copy()
+        #print(np.insert(inputs, 0, 1, axis=0))
         for i in range(len(self.weigths_matrices)):
             weigthed_inputs = np.dot(self.weigths_matrices[i], np.insert(inputs, 0, 1, axis=0))
             self.intermidiate_sums[i+1] = weigthed_inputs
@@ -75,29 +76,38 @@ class Network:
         deltas.append(deltas_output_nodes)
 
         #calculate delta of all other nodes
-        for i in reversed(range(len(self.weigths_matrices)-1)):
+        for i in reversed(range(1,len(self.weigths_matrices))):
+            #print(list(reversed(range(len(self.weigths_matrices)-1))))
             #take weight matrix without bias weigths
-            weigths_to_the_right = self.weigths_matrices[i+1][:,1:]
+            weigths_to_the_right = self.weigths_matrices[i][:,1:]
+            #print(self.weigths_matrices[i])
             summed_deltas_to_the_right = np.dot(weigths_to_the_right.T, deltas[0])
-            G_derived = self.vectorised_derivative(self.intermidiate_sums[i+1])
+            G_derived = self.vectorised_derivative(self.intermidiate_sums[i])
             new_deltas = np.multiply(summed_deltas_to_the_right, G_derived)
             deltas.insert(0, new_deltas)
+        #print(deltas)
 
         #calculate weigth adjustments using deltamatrix
-        for i in reversed(range(len(deltas))):
-            D = np.outer(deltas[i], np.full((len(self.intermidiate_sums[i])), 1))
+        for i in range(len(deltas)):
+            #D = np.outer(deltas[i], np.full((len(self.intermidiate_sums[i])), 1))
+            #print("---------------------------------------------")
+            #print(D)
+            #print(i)
             a = None
             if i == 0:
                 a = self.intermidiate_sums[i]
             else:
                 a = self.vectorised_activation(self.intermidiate_sums[i])
-            print(i)
-            print(self.intermidiate_sums[i])
-            print(deltas[i])
-            aD = np.multiply(a, D)
-            aD = np.insert(aD, 0, np.negative(deltas[i]), axis=1)
+            a = np.insert(a, 0, 1, axis=0)
+            aD = np.outer(deltas[i], a)
+            #print("layer input:", a)
+            ##print(deltas[i])
+            #print(aD)
+            #aD = np.multiply(a, D)
+            ##aD = np.insert(aD, 0, np.negative(deltas[i]), axis=1)
             naD = np.multiply(self.learning_rate, aD)
             self.weigths_matrices[i] = np.add(self.weigths_matrices[i], naD)
+        #print(self.weigths_matrices)
         return np.sum(faults)
 
 
@@ -106,20 +116,20 @@ class Network:
             inputs = self.vectorised_activation(np.dot(self.weigths_matrices[i], np.append(1, inputs)))
         return inputs
 
-n = Network(1, np.array([2,2,3,1]), sigmoid, sigmoid_derivative)
+n = Network(1, np.array([2,4,1]), sigmoid, sigmoid_derivative)
 
 inputsNOR = np.array([[0,0], [0,1], [1,0], [1,1]])
 validationNOR = np.array([1,0,0,0])
 
 
 faults = list()
-for i in range(100):
+for i in range(1000):
     loopFaults = 0
     for j in range(4):
         result = n.forward(inputsNOR[j])
         loopFaults +=abs(n.backprop(validationNOR[j]))
     faults.append(loopFaults)
-
+#quit()
 
 for j in range(4):
     result = n.forward(inputsNOR[j])

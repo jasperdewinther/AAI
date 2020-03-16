@@ -36,9 +36,6 @@ def activation_function(z):
 def activation_function_derivative(x):
     return sigmoid_derivative(x)
 
-
-vectorised_activation = np.vectorize(activation_function)
-
 class Network:
     def __init__(self, learning_rate: float, topology: np.ndarray, activation_function: callable, activation_function_derivative: callable, batch_size: int = 0):
         self.vectorised_activation = np.vectorize(activation_function)

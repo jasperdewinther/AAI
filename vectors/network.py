@@ -42,6 +42,9 @@ class Network:
         self.vectorised_derivative = np.vectorize(activation_function_derivative)
         self.learning_rate = learning_rate
 
+        self.batch_size = batch_size
+        self.batch_counter = batch_size
+        self.batch_delta = None
         np.random.seed(int(time.time()))
 
         self.intermidiate_sums = list()
@@ -56,10 +59,13 @@ class Network:
     
     def forward(self, inputs: np.ndarray) -> np.ndarray:
         self.intermidiate_sums[0] = inputs.copy()
+        #print("---------------------------------------------")
         for i in range(len(self.weigths_matrices)):
             weigthed_inputs = np.dot(self.weigths_matrices[i], np.insert(inputs, 0, 1, axis=0))
             self.intermidiate_sums[i+1] = weigthed_inputs
             inputs = self.vectorised_activation(weigthed_inputs)
+            #print("weigthed_inputs:")
+            #print(weigthed_inputs)
         return inputs
 
     def backprop(self, expected_outputs: np.ndarray) -> None:
@@ -79,17 +85,26 @@ class Network:
             new_deltas = np.multiply(summed_deltas_to_the_right, G_derived)
             deltas.insert(0, new_deltas)
 
-        #calculate weigth adjustments using deltamatrix
-        for i in range(len(deltas)):
-            a = None
-            if i == 0:
-                a = self.intermidiate_sums[i]
-            else:
-                a = self.vectorised_activation(self.intermidiate_sums[i])
-            a = np.insert(a, 0, 1, axis=0)
-            aD = np.outer(deltas[i], a)
-            naD = np.multiply(self.learning_rate, aD)
-            self.weigths_matrices[i] = np.add(self.weigths_matrices[i], naD)
+        if self.batch_counter == self.batch_size:
+            self.batch_counter = 0
+            self.batch_delta = list()
+            for i in range(len(deltas)):
+                self.batch_delta.append(np.array(deltas[i].shape))
+            #calculate weigth adjustments using deltamatrix
+            for i in range(len(deltas)):
+                a = None
+                if i == 0:
+                    a = self.intermidiate_sums[i]
+                else:
+                    a = self.vectorised_activation(self.intermidiate_sums[i])
+                a = np.insert(a, 0, 1, axis=0)
+                aD = np.outer(deltas[i], a)
+                naD = np.multiply(self.learning_rate, aD)
+                self.weigths_matrices[i] = np.add(self.weigths_matrices[i], naD)
+        else:
+            for i in range(len(deltas)):
+                self.batch_delta[i] = np.add(self.batch_delta[i], deltas[i])
+        self.batch_counter+=1  
         return np.sum(faults)
 
 
@@ -97,32 +112,3 @@ class Network:
         for i in range(len(self.weigths_matrices)):
             inputs = self.vectorised_activation(np.dot(self.weigths_matrices[i], np.append(1, inputs)))
         return inputs
-
-n = Network(10, np.array([2,8,2]), sigmoid, sigmoid_derivative)
-
-inputsNOR = np.array([[0,0], [0,1], [1,0], [1,1]])
-validationNOR = np.array([[0,0],[1,0], [1,0], [0,0]])
-
-
-faults = list()
-for i in range(1000):
-    loopFaults = 0
-    for j in range(4):
-        result = n.forward(inputsNOR[j])
-        loopFaults +=abs(n.backprop(validationNOR[j]))
-    faults.append(loopFaults)
-
-for j in range(4):
-    result = n.forward(inputsNOR[j])
-    n.backprop(validationNOR[j])
-
-for i in range(len(inputsNOR)):
-    desired = validationNOR[i]
-    print("input:", inputsNOR[i], "result:" , n.forward(inputsNOR[i]), "desired:", desired)
-
-
-#plot learning graph
-plt.plot(faults)
-plt.xlabel('iteration')
-plt.ylabel('fault')
-plt.show()

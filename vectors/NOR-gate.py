@@ -98,7 +98,7 @@ class Network:
             inputs = self.vectorised_activation(np.dot(self.weigths_matrices[i], np.append(1, inputs)))
         return inputs
 
-n = Network(1, np.array([2,4,1]), sigmoid, sigmoid_derivative)
+n = Network(1, np.array([2,1]), sigmoid, sigmoid_derivative)
 
 inputsNOR = np.array([[0,0], [0,1], [1,0], [1,1]])
 validationNOR = np.array([1,0,0,0])

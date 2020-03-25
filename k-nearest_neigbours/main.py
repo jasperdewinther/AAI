@@ -117,6 +117,7 @@ scaledValidation = scaleData(validationData, minMax)
 
 #get days
 days = np.genfromtxt('days.csv', delimiter=';', usecols=[1,2,3,4,5,6,7], converters={5: lambda s: 0 if s == b"-1" else float(s), 7: lambda s: 0 if s == b"-1" else float(s)})
+print("classifying the days.csv file data")
 for j in days:
     #print the most probable seasons from days
     print(k_nearestneighbor(59, data, j, labels))
@@ -146,7 +147,8 @@ for i in range(1, 366):
 
 #plot graph of accuracy
 plt.plot(array)
-plt.ylabel('some numbers')
+plt.ylabel('percentage correct')
+plt.xlabel('k')
 plt.show()
 
 #print best result

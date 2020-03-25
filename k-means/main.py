@@ -227,8 +227,8 @@ data = np.genfromtxt('dataset1.csv', delimiter=';', usecols=[1,2,3,4,5,6,7], con
 minMax = maxMinValues(data)
 scaledArray = scaleData(data, minMax)
 results = np.full([15], 0, float)
-for i in range(0,15):
-    _, seasons = k_means(i+1, scaledArray, labels=labels)
+for i in range(1,15):
+    _, seasons = k_means(i, scaledArray, labels=labels)
     #count unique seasons
     results[i] = len(set(seasons))
 plt.plot(results)

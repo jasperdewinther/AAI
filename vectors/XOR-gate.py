@@ -98,10 +98,10 @@ class Network:
             inputs = self.vectorised_activation(np.dot(self.weigths_matrices[i], np.append(1, inputs)))
         return inputs
 
-n = Network(10, np.array([2,8,2]), sigmoid, sigmoid_derivative)
+n = Network(10, np.array([2,16,1]), sigmoid, sigmoid_derivative)
 
 inputsNOR = np.array([[0,0], [0,1], [1,0], [1,1]])
-validationNOR = np.array([[0,0],[1,0], [1,0], [0,0]])
+validationNOR = np.array([[0],[1], [1], [0]])
 
 
 faults = list()

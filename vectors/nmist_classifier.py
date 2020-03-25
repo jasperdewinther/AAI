@@ -66,8 +66,8 @@ epochs_range = range(epochs)
 
 plt.figure(figsize=(8, 8))
 plt.subplot(1, 2, 1)
-plt.plot(epochs_range, accuracy, label='Training Binary Accuracy')
-plt.plot(epochs_range, val_accuracy, label='Validation Binary Accuracy')
+plt.plot(epochs_range, accuracy, label='Training Accuracy')
+plt.plot(epochs_range, val_accuracy, label='Validation Accuracy')
 plt.legend(loc='lower right')
 plt.title('Training and Validation Accuracy')
 

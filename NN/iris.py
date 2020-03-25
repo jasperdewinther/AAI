@@ -77,7 +77,7 @@ class Neuron:
             fault = self.output-desired
             self.delta = fault * activation_function_derivative(self.summed_input)
         else:
-            #calculate from nodes to the right and their weigths
+            #calculate delta using nodes to the right and their weigths
             weigthedSum = 0
             for i in range(len(nodes_to_the_right)):
                 weigthedSum += nodes_to_the_right[i].weigths[self.node_number] * nodes_to_the_right[i].delta
@@ -235,9 +235,9 @@ trainIn, validateIn, trainOut, validateOut = createTestSet(inputs, outputs, 0.5)
 fault = 100
 counter = 0
 batch_size = len(trainIn)
-learning_rate = 0.1
-#4 inputs 2 layers of 4 hidden nodes and 3 outputs
-network_topology = [4,4,4,3]
+learning_rate = 0.5
+#4 inputs 1 layer of 8 hidden nodes and 3 outputs
+network_topology = [4,8,3]
 
 #network with layout, learning rate and batch size
 network = Network(network_topology, learning_rate, batch_size)
@@ -249,7 +249,7 @@ print(network)
 faults = list()
 #keep improving until control-c has been pressed or a lot of training has been done
 try:
-    for j in range(10000):
+    for j in range(1000):
         fault = 0
         #loop over possible inputs
         for i in range(len(trainIn)):

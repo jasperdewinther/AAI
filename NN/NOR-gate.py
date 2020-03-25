@@ -73,15 +73,16 @@ fault = 100
 counter = 0
 #the larger the learning rate the faster it will hit the fault threshold, but there is also a higher chance that fault will be 0 because all results are 0
 #a learning rate of 200 is relatively stable and makes the neural network take less than 50 cycles (24 batches) to hit the fault threshold
-n = createNeuron(20,2)
-while fault > 0.00000001:
+n = createNeuron(10,2)
+while fault > 0.0001:
+    fault = 0.0
     #loop over possible inputs
     for i in range(len(inputsNOR)):
         desired = validationNOR[i]
         n.infer(inputsNOR[i])
-        fault = n.update(desired)
-        #print(fault)
+        fault += abs(n.update(desired))
         counter+=1
+    print("fault =", fault)
 print(n)
 print("took", counter, "updates and", counter/1, "batches")
 for i in range(len(inputsNOR)):

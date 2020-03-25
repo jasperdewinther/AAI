@@ -2,7 +2,6 @@ import pickle, gzip, os
 from urllib import request
 from pylab import imshow, show, cm
 import numpy as np
-import network
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow import keras
